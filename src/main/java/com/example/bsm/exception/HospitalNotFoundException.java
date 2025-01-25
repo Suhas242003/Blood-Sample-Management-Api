@@ -1,10 +1,9 @@
 package com.example.bsm.exception;
 
-public class UserNotFoundException extends RuntimeException {
+public class HospitalNotFoundException extends RuntimeException {
     private final String message;
 
-    public UserNotFoundException(String message) {
-        super();
+    public HospitalNotFoundException(String message) {
         this.message = message;
     }
 

@@ -1,13 +1,19 @@
 package com.example.bsm.service;
 
 import com.example.bsm.entity.User;
+import com.example.bsm.request.UserRequest;
+import com.example.bsm.response.UserResponse;
+
+import java.util.Optional;
 
 public interface UserService {
 
 
-    public User findUserById(int userId);
+     UserResponse findUserById(int userId);
 
-    User updateUserById(User user);
+    UserResponse updateUserById(UserRequest userRequest,int userId);
 
-    User addUser(User user);
+    UserResponse addUser(UserRequest userRequest);
+    UserResponse addMainUser(UserRequest userRequest);
+
 }

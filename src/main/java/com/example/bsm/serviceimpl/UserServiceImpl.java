@@ -1,8 +1,13 @@
 package com.example.bsm.serviceimpl;
 
-import com.example.bsm.exception.UserNotFoundException;
+import com.example.bsm.entity.Admin;
 import com.example.bsm.entity.User;
+import com.example.bsm.enums.AdminType;
+import com.example.bsm.exception.UserNotFoundExceptionById;
+import com.example.bsm.repository.AdminRepository;
 import com.example.bsm.repository.UserRepository;
+import com.example.bsm.request.UserRequest;
+import com.example.bsm.response.UserResponse;
 import com.example.bsm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,40 +18,82 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private AdminRepository adminRepository;
 
 
     @Override
-    public User addUser(User user) {
-        return userRepository.save(user);
+    public UserResponse addUser(UserRequest userRequest) {
+        User user = mapToUser(userRequest ,new User());
+
+        user =userRepository.save(user);
+        user.setRole(user.getRole());
+        return mapToUserResponse(user);
+
+    }
+
+    private UserResponse mapToUserResponse(User user) {
+        user = userRepository.save(user);
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .userId(user.getUserId())
+                .bloodGroup(user.getBloodGroup())
+                .age(user.getAge())
+                .availableCity(user.getAvailableCity())
+                .gender(user.getGender())
+                .verified(user.isVerified())
+                .lastDonatedAt(user.getLastDonatedAt())
+                .build();
+    }
+
+    private static User mapToUser(UserRequest userRequest,User user) {
+
+               user .setUsername(userRequest.getUsername());;
+                user.setAge(userRequest.getAge());
+                user.setEmail(userRequest.getEmail());
+                user.setAvailableCity(userRequest.getAvailableCity());
+                user.setPhoneNumber(userRequest.getPhoneNumber());
+                user.setGender(userRequest.getGender());
+                user.setBloodGroup(userRequest.getBloodGroup());
+                user.setPassword(userRequest.getPassword());
+        return user;
     }
 
     @Override
-    public User findUserById(int userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Failed find user"));
+    public UserResponse findUserById(int userId) {
+        User user= userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundExceptionById("User Not Found"));
+        return UserResponse.builder()
+                    .username(user.getUsername())
+                    .userId(user.getUserId())
+                    .bloodGroup(user.getBloodGroup())
+                    .age(user.getAge())
+                    .availableCity(user.getAvailableCity())
+                    .gender(user.getGender())
+                    .verified(user.isVerified())
+                    .lastDonatedAt(user.getLastDonatedAt())
+                    .build();
+
+
     }
-
     @Override
-    public User updateUserById(User user){
-        Optional<User> optional = userRepository.findById(user.getUserId());
+    public UserResponse updateUserById(UserRequest userRequest , int userId) {
+  Optional<User> optional = userRepository.findById(userId);
+  if (optional.isEmpty())
+    throw new UserNotFoundExceptionById("Failed to update the user");
 
-        if(optional.isPresent()) {
-            User exUser = optional.get();
-            exUser.setUsername(user.getUsername());
-            exUser.setEmail(user.getEmail());
-            exUser.setPassword(user.getPassword());
-            exUser.setPhoneNumber(user.getPhoneNumber());
-            exUser.setBloodGroup(user.getBloodGroup());
-            exUser.setLastDonatedAt(user.getLastDonatedAt());
-            exUser.setAge(user.getAge());
-            exUser.setGender(user.getGender());
-            exUser.setAvailableCity(user.getAvailableCity());
-            exUser.setVerified(user.isVerified());
-            return userRepository.save(exUser);
-        }else {
-            throw new UserNotFoundException("Failed to update User");
-        }
-
- }
-
-
+  User user = mapToUser(userRequest,optional.get());
+    userRepository.save(user);
+    return this.mapToUserResponse(user);
+    }
+    @Override
+    public UserResponse addMainUser(UserRequest userRequest){
+      User user = mapToUser(userRequest,new User());
+      user = userRepository.save(user);
+      Admin admin = Admin.builder()
+              .adminType(AdminType.Owner)
+              .user(user)
+              .build();
+        adminRepository.save(admin) ;
+        return mapToUserResponse(user);
+    }
 }

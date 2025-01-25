@@ -1,5 +1,5 @@
-//package com.example.bsm.serviceimpl;
-//
+//package com.example.bsm.service impl;
+
 //import com.example.bsm.entity.BloodBank;
 //import com.example.bsm.exception.BloodBankNotFoundException;
 //import com.example.bsm.repository.BloodBankRepository;

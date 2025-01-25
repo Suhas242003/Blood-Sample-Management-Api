@@ -9,24 +9,27 @@ import com.example.bsm.repository.UserRepository;
 import com.example.bsm.request.UserRequest;
 import com.example.bsm.response.UserResponse;
 import com.example.bsm.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+//    @Autowired
     private UserRepository userRepository;
     private AdminRepository adminRepository;
-
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse addUser(UserRequest userRequest) {
         User user = mapToUser(userRequest ,new User());
-
-        user =userRepository.save(user);
         user.setRole(user.getRole());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user =userRepository.save(user);
         return mapToUserResponse(user);
 
     }

@@ -7,4 +7,7 @@ public class UserNotFoundExceptionById extends RuntimeException{
 
     public UserNotFoundExceptionById(int userId) {
     }
+
+    public void UserNameNotFoundException(String email) {
+    }
 }

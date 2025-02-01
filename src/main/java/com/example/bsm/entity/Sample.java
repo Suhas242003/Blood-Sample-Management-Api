@@ -30,7 +30,9 @@ import lombok.NoArgsConstructor;
 
         private int availableUnits;
 
-
+    @ManyToOne
+    private BloodBank bloodBank;
     }
+
 
 

@@ -1,13 +1,11 @@
 package com.example.bsm.entity;
 
 
-import com.example.bsm.enums.AdminType;
 import com.example.bsm.enums.BloodGroup;
 import com.example.bsm.enums.Gender;
 import com.example.bsm.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.repository.cdi.Eager;
 
 import java.time.LocalDate;
 
@@ -42,6 +40,9 @@ public class User {
 
  @OneToOne(mappedBy = "user")
   private Admin admin;
+@OneToOne()
+  private Address address;
+
 
 
 }

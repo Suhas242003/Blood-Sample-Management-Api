@@ -1,23 +1,23 @@
 package com.example.bsm.service;
 
-import com.example.bsm.request.BloodBankRequest;
 import com.example.bsm.response.BloodBankResponse;
+import com.example.bsm.enums.BloodGroup;
+import com.example.bsm.request.BloodBankRequest;
+import com.example.bsm.response.BloodBankPageResponse;
+import com.example.bsm.response.BloodBankResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface BloodBankService {
 
+    BloodBankResponse findBloodBankById(int bankId);
 
-    BloodBankResponse addBloodBank(BloodBankRequest request);
+//    List<BloodBankPageResponse> findAllBloodBankByCity(List<String> city, List<BloodGroup> bloodGroup, int page, int size);
 
+    BloodBankResponse updateBloodBankById(int bankId, BloodBankRequest bankRequest);
 
-    BloodBankResponse getBloodBankById(int id);
+    BloodBankResponse addAdminBank(BloodBankRequest bankRequest, int adminId);
 
-
-    BloodBankResponse updateBloodBank(int bankId, BloodBankRequest bloodBankRequest);
-
-
-    List<BloodBankResponse> findAllBloodBanks();
-
-    List<BloodBankResponse> findBloodBank();
+    Page<BloodBankPageResponse> findAllBloodBankByCity(List<String> city, List<BloodGroup> bloodGroup, int page, int size);
 }

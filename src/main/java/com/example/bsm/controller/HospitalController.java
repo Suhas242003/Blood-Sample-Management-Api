@@ -5,10 +5,12 @@ import com.example.bsm.response.HospitalResponse;
 import com.example.bsm.service.HospitalService;
 import com.example.bsm.utility.ResponseStructure;
 import com.example.bsm.utility.RestResponseBuilder;
+
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,29 +18,27 @@ import org.springframework.web.bind.annotation.*;
 public class HospitalController {
 
     private final HospitalService hospitalService;
+
     private final RestResponseBuilder responseBuilder;
 
-    @PostMapping("/add-hospital")
-    public ResponseEntity<ResponseStructure<HospitalResponse>> addHospital(@RequestBody @Valid HospitalRequest hospitalRequest) {
-        HospitalResponse hospitalResponse = hospitalService.addHospital(hospitalRequest);
-        return responseBuilder.success(HttpStatus.CREATED, "Hospital Created", hospitalResponse);
+    @PreAuthorize("hasAnyAuthority('GUEST_ADMIN')")//OWNER
+    @PostMapping("/hospitals-admin/{adminId}")
+    public ResponseEntity<ResponseStructure<HospitalResponse>> addAdminHospital(@RequestBody HospitalRequest hospitalRequest, @PathVariable int adminId){
+        HospitalResponse hospitalResponse = hospitalService.addAdminHospital(hospitalRequest, adminId);
+        return responseBuilder.success(HttpStatus.CREATED, "Hospital Admin Created", hospitalResponse);
     }
 
-    @GetMapping(value = "/find-hospital")
-    public ResponseEntity<ResponseStructure<HospitalResponse>> getHospitalById(@RequestParam int hospitalId) {
-        HospitalResponse hospitalResponse1 = hospitalService.getHospitalById(hospitalId);
-        return responseBuilder.success(HttpStatus.FOUND, "User Found", hospitalResponse1);
+    @GetMapping("/hospitals/{hospitalId}")
+    public ResponseEntity<ResponseStructure<HospitalResponse>> findHospitalById(@PathVariable int hospitalId){
+        HospitalResponse hospitalResponse = hospitalService.findHospitalById(hospitalId);
+        return responseBuilder.success(HttpStatus.FOUND, "Hospital Found", hospitalResponse);
+    }
+    @PreAuthorize("hasAuthority('GUEST_ADMIN')")
+    @PutMapping("/hospitals/{hospitalId}")
+    public ResponseEntity<ResponseStructure<HospitalResponse>> updateHospitalById(@PathVariable int hospitalId, @RequestBody @Valid HospitalRequest hospitalRequest){
+        HospitalResponse hospitalResponse = hospitalService.updateHospitalById(hospitalId, hospitalRequest);
+        return  responseBuilder.success(HttpStatus.OK, "Hospital Updated", hospitalResponse);
     }
 
-    @PutMapping("/hospital/{hospitalId}")
-    public ResponseEntity<ResponseStructure<HospitalResponse>> updateHospitalById(@PathVariable int hospitalId, @RequestBody HospitalRequest hospitalRequest) {
-        HospitalResponse hospitalResponse2 = hospitalService.updateHospital(hospitalId, hospitalRequest);
-        return responseBuilder.success(HttpStatus.OK, "User Updated", hospitalResponse2);
-    }
 
-    @PostMapping("/add-admin")
-    public ResponseEntity<ResponseStructure<HospitalResponse>> addAdminHospital(@RequestBody @Valid HospitalRequest hospitalRequest, @RequestParam int userId) {
-        HospitalResponse hospitalResponse3 = hospitalService.assignAdminToHospital(hospitalRequest, userId);
-        return responseBuilder.success(HttpStatus.CREATED, "Hospital adding Admin Created", hospitalResponse3);
-    }
 }

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BloodBankRequest {
     private String name;
-    private boolean emergencyUnitsAvailable;
+    private int emergencyUnitsAvailable;
 }

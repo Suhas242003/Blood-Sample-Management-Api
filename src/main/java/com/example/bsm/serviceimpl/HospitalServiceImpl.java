@@ -2,76 +2,83 @@ package com.example.bsm.serviceimpl;
 
 import com.example.bsm.entity.Admin;
 import com.example.bsm.entity.Hospital;
-import com.example.bsm.entity.User;
-import com.example.bsm.enums.AdminType;
 import com.example.bsm.exception.HospitalNotFoundException;
-import com.example.bsm.exception.AdminNotFoundException;
+import com.example.bsm.exception.UserNotFoundExceptionById;
 import com.example.bsm.repository.AdminRepository;
 import com.example.bsm.repository.HospitalRepository;
 import com.example.bsm.repository.UserRepository;
 import com.example.bsm.request.HospitalRequest;
 import com.example.bsm.response.HospitalResponse;
 import com.example.bsm.service.HospitalService;
-import lombok.RequiredArgsConstructor;
+
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class HospitalServiceImpl implements HospitalService {
 
-    private final UserRepository userRepository;
     private final HospitalRepository hospitalRepository;
+
+    private final UserRepository userRepository;
     private final AdminRepository adminRepository;
 
-    @Override
-    public HospitalResponse addHospital(HospitalRequest request) {
-        Hospital hospital = new Hospital();
-        hospital.setName(request.getName());
-
-        Hospital savedHospital = hospitalRepository.save(hospital);
-        return mapToResponse(savedHospital);
-    }
-
-    @Override
-    public HospitalResponse getHospitalById(int id) {
-        Hospital hospital = hospitalRepository.findById(id)
-                .orElseThrow(() -> new HospitalNotFoundException("Hospital not found with ID: " + id));
-        return mapToResponse(hospital);
-    }
-
-    @Override
-    public HospitalResponse updateHospital(int id, HospitalRequest request) {
-        Hospital hospital = hospitalRepository.findById(id)
-                .orElseThrow(() -> new HospitalNotFoundException("Hospital not found with ID: " + id));
-
-        hospital.setName(request.getName());
-        Hospital updatedHospital = hospitalRepository.save(hospital);
-
-        return mapToResponse(updatedHospital);
-    }
-
-    @Override
-    public HospitalResponse assignAdminToHospital(HospitalRequest hospitalRequest, int adminId) {
-        User user = userRepository.findById(adminId)
-                .orElseThrow(() -> new AdminNotFoundException("The specified user does not exist or is not an Admin."));
-
-        Admin admin = user.getAdmin();
-        if (admin == null || admin.getAdminType() != AdminType.Owner) {
-            throw new AdminNotFoundException("The user is not an Admin of type Owner.");
-        }
-
-        Hospital hospital = new Hospital();
-        hospital.setName(hospitalRequest.getName());
-        admin.setHospital(hospital);
-        adminRepository.save(admin);
-
-        return mapToResponse(hospital);
-    }
-
-    private HospitalResponse mapToResponse(Hospital hospital) {
+    private HospitalResponse mapToHospitalResponse(Hospital hospital) {
         return HospitalResponse.builder()
                 .hospitalId(hospital.getHospitalId())
                 .name(hospital.getName())
                 .build();
+    }
+
+    private Hospital mapToHospital(HospitalRequest hospitalRequest, Hospital hospital) {
+        hospital.setName(hospitalRequest.getName());
+        return hospital;
+    }
+
+    @Override
+    public HospitalResponse addHospital(HospitalRequest hospitalRequest) {
+        Hospital hospital = this.mapToHospital(hospitalRequest, new Hospital());
+        hospital = hospitalRepository.save(hospital);
+        return this.mapToHospitalResponse(hospital);
+    }
+
+
+    @Override
+    public HospitalResponse findHospitalById(int hospitalId) {
+        Hospital hospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new HospitalNotFoundException("Hospital Not Found"));
+        return this.mapToHospitalResponse(hospital);
+    }
+
+    @Override
+    public HospitalResponse updateHospitalById(int hospitalId, HospitalRequest hospitalRequest) {
+        Hospital exHospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new HospitalNotFoundException("Failed to update"));
+        Hospital hospital = this.mapToHospital(hospitalRequest, exHospital);
+
+        Hospital updatedHospital = hospitalRepository.save(hospital);
+        return  mapToHospitalResponse(updatedHospital);
+    }
+
+
+    @Override
+    public HospitalResponse addAdminHospital(HospitalRequest hospitalRequest, int adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(()-> new UserNotFoundExceptionById("Admin Not Found"));
+        Hospital hospital = Hospital.builder()
+                .name(hospitalRequest.getName())
+                .build();
+
+        hospital = hospitalRepository.save(hospital);
+        List<Admin> admins = new ArrayList<>();
+        admins.add(admin);
+        hospital.setAdmin(admins);
+
+        admin.setHospital(hospital);
+        adminRepository.save(admin);
+        return this.mapToHospitalResponse(hospital);
     }
 }

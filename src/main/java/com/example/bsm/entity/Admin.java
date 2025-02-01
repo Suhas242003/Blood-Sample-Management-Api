@@ -1,6 +1,5 @@
 package com.example.bsm.entity;
 
-import com.example.bsm.enums.AdminType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,11 +15,12 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminId;
-    private AdminType adminType;
 
-    @OneToOne
+    @ManyToOne
     private User user;
     @ManyToOne
     private Hospital hospital;
+    @OneToOne
+    private BloodBank bloodBank;
 
 }

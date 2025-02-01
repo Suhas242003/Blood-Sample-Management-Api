@@ -1,7 +1,8 @@
 package com.example.bsm.service;
 
-import com.example.bsm.response.UserResponse;
+import com.example.bsm.response.AdminResponse;
+import com.example.bsm.response.AdminResponse;
 
 public interface AdminService {
-    UserResponse promoteUserToAdmin(int userId);
+    AdminResponse promoteUserToAdmin(int userId);
 }

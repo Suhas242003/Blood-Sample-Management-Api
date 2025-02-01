@@ -1,19 +1,14 @@
 package com.example.bsm.service;
 
-
-import com.example.bsm.entity.Sample;
-
-import java.util.List;
+import com.example.bsm.request.SampleRequest;
+import com.example.bsm.response.SampleResponse;
 
 public interface SampleService {
+    SampleResponse findSampleById(int sampleId);
 
-    Sample createSample(Sample sample);
+    SampleResponse updateSample(int sampleId, SampleRequest sampleRequest);
 
-    Sample getSampleById(int sampleId);
+    SampleResponse addSample(SampleRequest sampleRequest);
 
-    List<Sample> getAllSamples();
-
-    Sample updateSample(int sampleId, Sample sample);
-
-    void deleteSample(int sampleId);
+    SampleResponse registerSample(SampleRequest sampleRequest, int bankId);
 }

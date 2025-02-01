@@ -1,13 +1,11 @@
 package com.example.bsm.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class UserNotFoundExceptionById extends RuntimeException{
+    private final String message;
 
-    public UserNotFoundExceptionById(String userNotFound) {
-    }
-
-    public UserNotFoundExceptionById(int userId) {
-    }
-
-    public void UserNameNotFoundException(String email) {
-    }
 }

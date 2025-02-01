@@ -1,33 +1,33 @@
 package com.example.bsm.controller;
 
-import com.example.bsm.request.UserRequest;
-import com.example.bsm.response.UserResponse;
+import com.example.bsm.response.AdminResponse;
 import com.example.bsm.service.AdminService;
-import com.example.bsm.service.UserService;
 import com.example.bsm.utility.ResponseStructure;
 import com.example.bsm.utility.RestResponseBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 public class AdminController {
-@Autowired
-private AdminService adminService;
-private UserService userService;
-private RestResponseBuilder responseBuilder;
-    @PostMapping("/add")
-    public ResponseEntity<ResponseStructure<UserResponse>> addUser(@RequestBody UserRequest userRequest){
-        UserResponse userResponse = userService.addUser(userRequest);
-        return responseBuilder .success(HttpStatus.CREATED,"Created",userResponse);
-    }
-   
-        @PutMapping("/user/promote/{userId}")
-        public ResponseEntity<ResponseStructure<UserResponse>> promoteUserToAdmin(@PathVariable int userId) {
-            UserResponse userResponse = adminService.promoteUserToAdmin(userId);
-            return responseBuilder.success(HttpStatus.OK, "User promoted to Admin", userResponse);
-        }
+
+    private final AdminService adminService;
+    private final RestResponseBuilder responseBuilder;
+
+    @PreAuthorize("hasAuthority('OWNER_ADMIN')")
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<ResponseStructure<AdminResponse>> promoteUserToAdmin(@PathVariable int userId){
+        AdminResponse adminResponse = adminService.promoteUserToAdmin(userId);
+        return responseBuilder.success(HttpStatus.CREATED, "Admin Created", adminResponse);
+
     }
 
 
+
+
+}

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseStructure<T> {
+
     private int status;
     private String message;
     private T data;

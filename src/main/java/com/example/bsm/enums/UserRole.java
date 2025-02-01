@@ -1,6 +1,6 @@
 package com.example.bsm.enums;
 
 public enum UserRole {
-    User,
-    ADMIN;
+  USER,  OWNER_ADMIN,
+   GUEST_ADMIN, ;
 }

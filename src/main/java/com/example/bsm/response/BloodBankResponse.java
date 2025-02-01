@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class BloodBankResponse {
+
     private int bankId;
     private String name;
-    private boolean emergencyUnitsAvailable;
+    private int emergencyUnitCount;
 }

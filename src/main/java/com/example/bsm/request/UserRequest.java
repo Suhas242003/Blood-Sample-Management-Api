@@ -1,12 +1,16 @@
 package com.example.bsm.request;
 
+import com.example.bsm.entity.Address;
 import com.example.bsm.enums.BloodGroup;
 import com.example.bsm.enums.Gender;
+import com.example.bsm.enums.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -46,5 +50,10 @@ public class UserRequest {
 
     private Gender gender;
     private BloodGroup bloodGroup;
+
+    private UserRole Role;
+    private Address address;
+
+    private LocalDate lastDonatedAt;
 
 }
